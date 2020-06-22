@@ -1,4 +1,5 @@
 import { DataTypes, Database, Model } from './deps.ts';
+import { IdentifyAPIResponse } from './fetcher.ts';
 
 const db = new Database('mysql', {
   host: 'db',
@@ -18,7 +19,7 @@ class Plot extends Model {
       length: 8
     },
     terrain: DataTypes.INTEGER,
-    altitude: DataTypes.INTEGER,
+    elevation: DataTypes.INTEGER,
   };
 }
 
@@ -27,4 +28,11 @@ db.sync({ drop: true });
 
 export async function getPlot(plotCode: string) {
   return Plot.select('id', 'destination').get();
+}
+
+export async function addPlot(plotCode: string, terrain: string, elevation: number) {
+  return Plot.create({
+    terrain,
+    elevation,
+  })
 }
