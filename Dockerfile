@@ -12,4 +12,6 @@ USER deno
 COPY ./app/deps.ts .
 RUN deno cache deps.ts
 
+ADD ./app .
+
 CMD ["run", "--allow-net", "--allow-env", "main.ts"]
