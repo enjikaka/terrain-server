@@ -5,9 +5,9 @@ services:
     image: mysql:5.7.30
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: empires
+      MYSQL_ROOT_PASSWORD: demo
       MYSQL_USER: deno
-      MYSQL_PASSWORD: empires
+      MYSQL_PASSWORD: demo
       MYSQL_DATABASE: terrain
     volumes:
       - db_data:/var/lib/mysql
@@ -22,5 +22,8 @@ services:
       - ./app:/app
     ports:
       - 5000:5000
+    environment:
+      DB_USER: deno
+      DB_PWD: demo
 volumes:
   db_data: {}

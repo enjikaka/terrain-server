@@ -1,12 +1,20 @@
 import { DataTypes, Database, Model } from './deps.ts';
-import { IdentifyAPIResponse } from './fetcher.ts';
 
-const db = new Database('mysql', {
-  host: 'db',
-  username: 'deno',
-  password: 'empires',
-  database: 'terrain',
-});
+let db;
+
+const username = Deno.env.get('DB_USER');
+const password = Deno.env.get('DB_PWD');
+
+if (username && password) {
+  db = new Database('mysql', {
+    host: 'db',
+    username,
+    password,
+    database: 'terrain',
+  })
+} else {
+  throw new Error('Missing DB credentials in env vars.');
+}
 
 class Plot extends Model {
   static table = 'plot';
