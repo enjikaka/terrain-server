@@ -1,5 +1,5 @@
 import { getPlot, addPlot } from './database.ts';
-import { getTerrainFromPlotCode, getElevation } from './fetcher.ts';
+import { getTerrainDataFromPlotCode, getElevation } from './fetcher.ts';
 import { ServerRequest } from './deps.ts';
 
 export async function GET (req: ServerRequest) {
@@ -18,7 +18,7 @@ export async function GET (req: ServerRequest) {
     let data = await getPlot(code);
 
     if (!data) {
-      const terrainData = await getTerrainFromPlotCode(code);
+      const terrainData = await getTerrainDataFromPlotCode(code);
       const elevation = await getElevation(code);
 
       data = {

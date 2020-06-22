@@ -208,7 +208,7 @@ function getBoundsInMeters (decodedOpenLocationCode: CodeArea) {
   return { xmin, ymin, xmax, ymax };
 }
 
-function getTerrainDataFromPlotCode (plotCode: string) {
+export function getTerrainDataFromPlotCode (plotCode: string) {
   const decodedOCL = OpenLocationCode.decode(plotCode);
   const { xmin, ymin, xmax, ymax } = getBoundsInMeters(decodedOCL);
   const tilePromise = fetchIdentifyEnvelope({ xmin, ymin, xmax, ymax, spatialReference: 102100 });
@@ -224,10 +224,6 @@ function getTerrainDataFromPlotCode (plotCode: string) {
 
     return terrainTypes[0];
   });
-}
-
-export function getTerrainFromPlotCode (plotCode: string) {
-  return getTerrainDataFromPlotCode(plotCode);
 }
 
 export async function getElevation (plotCode: string) {

@@ -1,4 +1,4 @@
-FROM hayd/alpine-deno:1.1.0
+FROM hayd/alpine-deno:1.1.1
 
 EXPOSE 5000
 
@@ -12,4 +12,4 @@ USER deno
 COPY ./app/deps.ts .
 RUN deno cache deps.ts
 
-CMD ["run", "--allow-net", "--allow-env", "main.ts"]
+CMD ["run", "--allow-net", "--allow-env", "--inspect", "main.ts"]
