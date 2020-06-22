@@ -36,7 +36,12 @@ export async function GET (req: ServerRequest) {
       databaseCall = addPlot(code, terrainData.value, 200);
     }
 
+    const headers = new Headers();
+
+    headers.append('Access-Control-Allow-Origin', '*');
+
     req.respond({
+      headers,
       status: 200,
       body: JSON.stringify(data)
     });
