@@ -171,11 +171,11 @@ interface EsriGeometryEnvelope {
   spatialReference: number;
 }
 
-const layerInfoURL = 'https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2018_WM/MapServer/0?f=json';
+const layerInfoURL = 'https://thingproxy.freeboard.io/fetch/https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2018_WM/MapServer/0?f=json';
 const layerPromise: Promise<LayerAPIResponse> = fetch(layerInfoURL).then(r => r.json());
 
 function fetchIdentifyEnvelope (envelope: EsriGeometryEnvelope): Promise<IdentifyAPIResponse> {
-  const url = new URL('https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2018_WM/MapServer/identify');
+  const url = new URL('https://thingproxy.freeboard.io/fetch/https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2018_WM/MapServer/identify');
   const bbox = [envelope.xmin, envelope.ymin, envelope.xmax, envelope.ymax].join(',');
 
   url.searchParams.append('geometry', JSON.stringify(envelope));
