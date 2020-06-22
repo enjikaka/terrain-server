@@ -15,14 +15,21 @@ export async function GET (req: ServerRequest) {
       });
     }
 
-    let data = await getPlot(code);
+    let data;
+
+    try {
+      data = await getPlot(code);
+      console.log('db', data);
+    } catch(e) {}
 
     if (!data) {
       const terrainData = await getTerrainDataFromPlotCode(code);
       const elevation = await getElevation(code);
 
       data = {
-        terrain: terrainData.value,
+        id: code,
+        terrainType: terrainData.value,
+        terrainDesc: terrainData.label.split(':')[1].trim(),
         elevation,
       };
 

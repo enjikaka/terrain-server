@@ -24,9 +24,10 @@ class Plot extends Model {
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
-      length: 8
+      length: 11
     },
-    terrain: DataTypes.INTEGER,
+    terrainType: DataTypes.INTEGER,
+    terrainDesc: DataTypes.STRING,
     elevation: DataTypes.INTEGER,
   };
 }
@@ -35,11 +36,14 @@ db.link([Plot]);
 db.sync({ drop: true });
 
 export async function getPlot(plotCode: string) {
-  return Plot.select('id', 'destination').get();
+  const foundPlots = await Plot.where('id', plotCode).get();
+
+  return foundPlots[0];
 }
 
 export async function addPlot(plotCode: string, terrain: string, elevation: number) {
   return Plot.create({
+    id: plotCode,
     terrain,
     elevation,
   })

@@ -1,10 +1,40 @@
 import { OpenLocationCode, CodeArea } from "./deps.ts";
 
-export interface IdentifyAPIResponse {
-  results: Result[];
+export interface ElevationAPIResponse {
+  results: ElevationAPIResponseResult[];
 }
 
-export interface Result {
+export interface ElevationAPIResponseResult {
+  layerId: number;
+  layerName: string;
+  displayFieldName: string;
+  attributes: Attributes;
+}
+
+export interface Attributes {
+  "Stretched value": string;
+  "Pixel Value": string;
+}
+
+export interface AllOriginsResponse {
+  contents: string;
+  status: Status;
+}
+
+export interface Status {
+  url: string;
+  content_type: string;
+  content_length: number;
+  http_code: number;
+  response_time: number;
+}
+
+
+export interface CorineAPIResponse {
+  results: CorineAPIResponseResult[];
+}
+
+export interface CorineAPIResponseResult {
   layerId: number;
   layerName: string;
   displayFieldName: string;
@@ -174,8 +204,8 @@ interface EsriGeometryEnvelope {
 const layerInfoURL = 'https://thingproxy.freeboard.io/fetch/https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2018_WM/MapServer/0?f=json';
 const layerPromise: Promise<LayerAPIResponse> = fetch(layerInfoURL).then(r => r.json());
 
-function fetchIdentifyEnvelope (envelope: EsriGeometryEnvelope): Promise<IdentifyAPIResponse> {
-  const url = new URL('https://thingproxy.freeboard.io/fetch/https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2018_WM/MapServer/identify');
+function fetchIdentifyEnvelope (envelope: EsriGeometryEnvelope): Promise<CorineAPIResponse> {
+  const url = new URL('https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2018_WM/MapServer/identify');
   const bbox = [envelope.xmin, envelope.ymin, envelope.xmax, envelope.ymax].join(',');
 
   url.searchParams.append('geometry', JSON.stringify(envelope));
@@ -186,7 +216,36 @@ function fetchIdentifyEnvelope (envelope: EsriGeometryEnvelope): Promise<Identif
   url.searchParams.append('imageDisplay', '10,10');
   url.searchParams.append('f', 'pjson');
 
-  return fetch(url).then(r => r.json());
+  const finalUrl = `https://api.allorigins.win/get?url=` + encodeURIComponent(url.toString());
+
+  console.log(finalUrl);
+
+  return fetch(finalUrl)
+    .then(r => r.json())
+    .then((randomWrapper: AllOriginsResponse) => randomWrapper.contents)
+    .then(contents => JSON.parse(contents));
+}
+
+function fetchElevationData (envelope: EsriGeometryEnvelope): Promise<ElevationAPIResponse> {
+  const url = new URL('https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Elevation/EUElev_DEM_V11/MapServer/identify');
+  const bbox = [envelope.xmin, envelope.ymin, envelope.xmax, envelope.ymax].join(',');
+
+  url.searchParams.append('geometry', JSON.stringify(envelope));
+  url.searchParams.append('geometryType', 'esriGeometryEnvelope');
+  url.searchParams.append('tolerance', '1');
+  url.searchParams.append('mapExtent', bbox);
+  url.searchParams.append('returnGeometry', 'false');
+  url.searchParams.append('imageDisplay', '10,10');
+  url.searchParams.append('f', 'pjson');
+
+  const finalUrl = `https://api.allorigins.win/get?url=` + encodeURIComponent(url.toString());
+
+  console.log(finalUrl);
+
+  return fetch(finalUrl)
+    .then(r => r.json())
+    .then((randomWrapper: AllOriginsResponse) => randomWrapper.contents)
+    .then(contents => JSON.parse(contents));
 }
 
 /**
@@ -228,12 +287,8 @@ export function getTerrainDataFromPlotCode (plotCode: string) {
 
 export async function getElevation (plotCode: string) {
   const decodedOCL = OpenLocationCode.decode(plotCode);
+  const { xmin, ymin, xmax, ymax } = getBoundsInMeters(decodedOCL);
+  const json = await fetchElevationData({ xmin, ymin, xmax, ymax, spatialReference: 102100 });
 
-  const coords = [decodedOCL.latitudeCenter, decodedOCL.longitudeCenter].join(',');
-  const response = await fetch('https://api.open-elevation.com/api/v1/lookup?locations=' + coords);
-  const json = await response.json();
-
-  console.log(json);
-
-  return json.results[0].elevation;
+  return json.results[0].attributes["Pixel Value"];
 }

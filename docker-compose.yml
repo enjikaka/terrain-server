@@ -17,6 +17,7 @@ services:
     depends_on:
       - db
     user: deno
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
