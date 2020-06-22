@@ -14,7 +14,7 @@ function handleRequest (req: ServerRequest) {
 
 const server = serve({ port: 5000 });
 
-console.log("http://localhost:5000/");
+console.log("Running terrain server at http://localhost:5000/");
 
 for await (const req of server) {
   handleRequest(req);
