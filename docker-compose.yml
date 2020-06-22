@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql:5.7.30
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: empires
+      MYSQL_USER: deno
+      MYSQL_PASSWORD: empires
+      MYSQL_DATABASE: terrain
+    volumes:
+      - db_data:/var/lib/mysql
+  app:
+    depends_on:
+      - db
+    user: deno
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app
+    ports:
+      - 5000:5000
+volumes:
+  db_data: {}
