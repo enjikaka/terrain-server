@@ -12,4 +12,4 @@ USER deno
 COPY ./app/deps.ts .
 RUN deno cache deps.ts
 
-CMD ["run", "--allow-net", "--allow-env", "--inspect", "main.ts"]
+CMD ["run", "--allow-net", "--allow-env", "main.ts"]
