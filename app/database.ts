@@ -4,6 +4,7 @@ let db;
 
 const username = Deno.env.get('DB_USER');
 const password = Deno.env.get('DB_PWD');
+const dbURL = Deno.env.get('DATABASE_URL');
 
 if (username && password) {
   db = new Database('mysql', {
@@ -11,6 +12,17 @@ if (username && password) {
     username,
     password,
     database: 'terrain',
+  });
+} else if (dbURL) {
+  const [,, url, database] = dbURL.split('/');
+  const [username, password] = url.split('@')[0].split(':');
+  const host = url.split('@')[1];
+
+  db = new Database('mysql', {
+    host,
+    username,
+    password,
+    database,
   })
 } else {
   throw new Error('Missing DB credentials in env vars.');
