@@ -16,7 +16,7 @@ if (username && password) {
 } else if (dbURL) {
   const [,, url, database] = dbURL.split('/');
   const [username, password] = url.split('@')[0].split(':');
-  const host = url.split('@')[1];
+  const host = url.split('@')[1].split(':')[0];
 
   db = new Database('mysql', {
     host,
