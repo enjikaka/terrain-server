@@ -53,10 +53,20 @@ export async function getPlot(plotCode: string) {
   return foundPlots[0];
 }
 
-export async function addPlot(plotCode: string, terrain: string, elevation: number) {
+interface PlotInit {
+  id: string;
+  terrainType: number;
+  terrainDesc: string;
+  elevation: number;
+}
+
+export async function addPlot(plot: PlotInit) {
+  const { id, terrainType, terrainDesc, elevation } = plot;
+
   return Plot.create({
-    id: plotCode,
-    terrain,
+    id,
+    terrainType,
+    terrainDesc,
     elevation,
   })
 }

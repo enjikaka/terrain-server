@@ -281,10 +281,10 @@ export function getTerrainDataFromPlotCode (plotCode: string) {
   });
 }
 
-export async function getElevation (plotCode: string) {
+export async function getElevation (plotCode: string): Promise<number> {
   const decodedOCL = OpenLocationCode.decode(plotCode);
   const { xmin, ymin, xmax, ymax } = getBoundsInMeters(decodedOCL);
   const json = await fetchElevationData({ xmin, ymin, xmax, ymax, spatialReference: 102100 });
 
-  return json.results[0].attributes["Pixel Value"];
+  return parseInt(json.results[0].attributes["Pixel Value"], 10);
 }

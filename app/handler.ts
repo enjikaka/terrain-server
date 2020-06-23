@@ -37,14 +37,17 @@ export async function GET (req: ServerRequest) {
       const terrainData = await getTerrainDataFromPlotCode(code);
       const elevation = await getElevation(code);
 
+      const terrainType = parseInt(terrainData.value, 10);
+      const terrainDesc = terrainData.label.split(':')[1].trim();
+
       data = {
         id: code,
-        terrainType: terrainData.value,
-        terrainDesc: terrainData.label.split(':')[1].trim(),
+        terrainType,
+        terrainDesc,
         elevation,
       };
 
-      databaseCall = addPlot(code, terrainData.value, 200);
+      databaseCall = addPlot({ id: code, terrainType, terrainDesc, elevation });
     }
 
     const headers = new Headers();
