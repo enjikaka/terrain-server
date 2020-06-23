@@ -40,6 +40,7 @@ export async function GET (req: ServerRequest) {
   const headers = new Headers();
 
   headers.append('Access-Control-Allow-Origin', '*');
+  headers.append('Cache-Control', 'max-age=31536000');
 
   req.respond({
     headers,
