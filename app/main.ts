@@ -1,5 +1,6 @@
 import { serve, ServerRequest } from './deps.ts';
 import { GET, OPTIONS } from './handler.ts';
+import { ensureModels } from './database.ts';
 
 async function handleRequest (req: ServerRequest) {
   if (req.method === 'GET') {
@@ -17,6 +18,8 @@ async function handleRequest (req: ServerRequest) {
 const server = serve({ port: 5000 });
 
 console.log("Running terrain server at http://localhost:5000/");
+
+ensureModels();
 
 for await (const req of server) {
   handleRequest(req);

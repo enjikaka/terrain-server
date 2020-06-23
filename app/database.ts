@@ -1,31 +1,32 @@
 import { DataTypes, Database, Model } from './deps.ts';
+import { PlotInit } from './model/plot.ts';
 
-let db;
+async function connect () {
+  const username = Deno.env.get('DB_USER');
+  const password = Deno.env.get('DB_PWD');
+  const dbURL = Deno.env.get('DATABASE_URL');
 
-const username = Deno.env.get('DB_USER');
-const password = Deno.env.get('DB_PWD');
-const dbURL = Deno.env.get('DATABASE_URL');
+  if (username && password) {
+    return new Database('mysql', {
+      host: 'db',
+      username,
+      password,
+      database: 'terrain',
+    });
+  } else if (dbURL) {
+    const [,, url, database] = dbURL.split('/');
+    const [username, password] = url.split('@')[0].split(':');
+    const host = url.split('@')[1].split(':')[0];
 
-if (username && password) {
-  db = new Database('mysql', {
-    host: 'db',
-    username,
-    password,
-    database: 'terrain',
-  });
-} else if (dbURL) {
-  const [,, url, database] = dbURL.split('/');
-  const [username, password] = url.split('@')[0].split(':');
-  const host = url.split('@')[1].split(':')[0];
-
-  db = new Database('mysql', {
-    host,
-    username,
-    password,
-    database,
-  })
-} else {
-  throw new Error('Missing DB credentials in env vars.');
+    return new Database('mysql', {
+      host,
+      username,
+      password,
+      database,
+    });
+  } else {
+    throw new Error('Missing DB credentials in env vars.');
+  }
 }
 
 class Plot extends Model {
@@ -44,29 +45,47 @@ class Plot extends Model {
   };
 }
 
-db.link([Plot]);
-db.sync({ drop: true });
+export async function ensureModels () {
+  const db = await connect();
 
-export async function getPlot(plotCode: string) {
-  const foundPlots = await Plot.where('id', plotCode).get();
-
-  return foundPlots[0];
+  db.link([Plot]);
+  await db.sync({ drop: true });
+  db.close();
 }
 
-interface PlotInit {
-  id: string;
-  terrainType: number;
-  terrainDesc: string;
-  elevation: number;
+export async function getPlot(plotCode: string) {
+  let db;
+
+  try {
+    db = await connect();
+
+    const foundPlots = await Plot.where('id', plotCode).get();
+
+    return foundPlots[0];
+  } catch (e) {
+    console.log(e);
+  } finally {
+    if (db) db.close();
+  }
 }
 
 export async function addPlot(plot: PlotInit) {
-  const { id, terrainType, terrainDesc, elevation } = plot;
+  let db;
 
-  return Plot.create({
-    id,
-    terrainType,
-    terrainDesc,
-    elevation,
-  })
+  try {
+    db = await connect();
+
+    const { id, terrainType, terrainDesc, elevation } = plot;
+
+    return Plot.create({
+      id,
+      terrainType,
+      terrainDesc,
+      elevation,
+    });
+  } catch (e) {
+    console.log(e);
+  } finally {
+    if (db) db.close();
+  }
 }
