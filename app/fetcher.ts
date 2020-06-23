@@ -218,8 +218,6 @@ function fetchIdentifyEnvelope (envelope: EsriGeometryEnvelope): Promise<CorineA
 
   const finalUrl = `https://api.allorigins.win/get?url=` + encodeURIComponent(url.toString());
 
-  console.log(finalUrl);
-
   return fetch(finalUrl)
     .then(r => r.json())
     .then((randomWrapper: AllOriginsResponse) => randomWrapper.contents)
@@ -239,8 +237,6 @@ function fetchElevationData (envelope: EsriGeometryEnvelope): Promise<ElevationA
   url.searchParams.append('f', 'pjson');
 
   const finalUrl = `https://api.allorigins.win/get?url=` + encodeURIComponent(url.toString());
-
-  console.log(finalUrl);
 
   return fetch(finalUrl)
     .then(r => r.json())

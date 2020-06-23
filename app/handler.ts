@@ -19,7 +19,6 @@ export async function GET (req: ServerRequest) {
 
     try {
       data = await getPlot(code);
-      console.log('db', data);
     } catch(e) {}
 
     if (!data) {
