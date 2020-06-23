@@ -1,6 +1,6 @@
 import { getPlot, addPlot } from './database.ts';
 import { getTerrainDataFromPlotCode, getElevation } from './fetcher.ts';
-import { ServerRequest } from './deps.ts';
+import { ServerRequest, extname } from './deps.ts';
 
 export async function OPTIONS (req: ServerRequest) {
   const headers = new Headers();
@@ -20,7 +20,7 @@ export async function GET (req: ServerRequest) {
   try {
     const [, code] = req.url.split('/');
 
-    if (code.length !== 11) {
+    if (code.length !== 11 || extname(code) !== '') {
       req.respond({
         status: 422,
         body: 'Not a valid plus code'
