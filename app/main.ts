@@ -1,9 +1,11 @@
 import { serve, ServerRequest } from './deps.ts';
-import { GET } from './handler.ts';
+import { GET, OPTIONS } from './handler.ts';
 
 async function handleRequest (req: ServerRequest) {
   if (req.method === 'GET') {
     await GET(req);
+  } else if (req.method === 'OPTIONS') {
+    await OPTIONS(req);
   } else {
     req.respond({
       status: 405,

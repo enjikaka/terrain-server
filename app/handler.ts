@@ -2,6 +2,18 @@ import { getPlot, addPlot } from './database.ts';
 import { getTerrainDataFromPlotCode, getElevation } from './fetcher.ts';
 import { ServerRequest } from './deps.ts';
 
+export async function OPTIONS (req: ServerRequest) {
+  const headers = new Headers();
+
+  headers.append('Access-Control-Allow-Origin', '*');
+  headers.append('Access-Control-Allow-Methods', 'GET');
+
+  req.respond({
+    headers,
+    status: 204,
+  });
+}
+
 export async function GET (req: ServerRequest) {
   let databaseCall;
 
